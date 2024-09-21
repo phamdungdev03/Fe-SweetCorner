@@ -1,0 +1,9 @@
+export { default as HomePage } from "./Home";
+export { default as Collections } from "./Collections";
+export { default as CartPage } from "./Cart";
+export { default as CheckOutPage } from "./CheckOut";
+export { default as ProductDetailPage } from "./ProductDetail";
+export { default as IntroducePage } from "./Introduce";
+export { default as AccountPage } from "./Account";
+export { default as NewsPage } from "./News";
+export { default as ThankYouCheckOut } from "./ThankYou";

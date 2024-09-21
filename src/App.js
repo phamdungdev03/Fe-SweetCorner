@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import routes from "./Routers";
+import { AdminLayout, PageLayout } from "./Component";
+import PrivateRoute from "./Routers/privateRoute";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {routes.map(({ path, element, isSildebar, isHeader, isProtected }) => {
+          const PageElement = element;
+          let routeElement = <PageElement key={path} />;
+          if (isProtected) {
+            routeElement = (
+              <PrivateRoute key={path}>{routeElement}</PrivateRoute>
+            );
+          }
+          if (isSildebar) {
+            return (
+              <Route
+                key={path}
+                path={path}
+                element={<AdminLayout>{routeElement}</AdminLayout>}
+              />
+            );
+          }
+
+          if (isHeader) {
+            return (
+              <Route
+                key={path}
+                path={path}
+                element={<PageLayout>{routeElement}</PageLayout>}
+              />
+            );
+          }
+
+          return <Route key={path} path={path} element={routeElement} />;
+        })}
+      </Routes>
+    </BrowserRouter>
   );
 }
 
