@@ -8,7 +8,7 @@ const DialogLogin = () => {
         <ul>
           <li
             className="py-2 px-4 hover:bg-gray-200 cursor-pointer"
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/sign_up")}
           >
             Đăng ký
           </li>

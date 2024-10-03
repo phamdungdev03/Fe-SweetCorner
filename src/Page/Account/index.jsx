@@ -13,13 +13,13 @@ const AccountPage = () => {
   const { accountLogin } = useSelector((state) => state?.accountReducer || {});
   const [activeTab, setActiveTab] = useState("infoAccount");
   const [reload, setReload] = useState();
-
+  const account_id = accountLogin?.account_id;
   const renderContent = () => {
     switch (activeTab) {
       case "infoAccount":
         return <AccountInfo {...{ accountLogin, ReloadData }} />;
       case "orderHistory":
-        return <OrderHistory />;
+        return <OrderHistory {...{ account_id }} />;
       case "changePassword":
         return <ChangePassword />;
       default:

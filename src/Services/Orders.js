@@ -8,6 +8,10 @@ export const apiGetOrderById = (id) => {
   return http.get(`order/orders/${id}`);
 };
 
+export const apiGetOrderByAccountId = (id) => {
+  return http.get(`order/orders/account/${id}`);
+};
+
 export const apiCreateOrder = (data) => {
   return http.post(`order/create_order`, data);
 };

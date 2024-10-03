@@ -12,6 +12,6 @@ export const apiRefreshToken = (data) => {
   return http.post(`api/refreshToken`, data);
 };
 
-// export const apiLoginByGoogle = () => {
-//   return http.post(`http://localhost:8080/api/api/google`);
-// };
+export const apiLoginByGoogle = () => {
+  return http.post(`api/google`);
+};

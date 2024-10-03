@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaFacebook } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { axiosLogin } from "../../ReduxToolkit/sildes/loginSlide";
 import { useNavigate } from "react-router-dom";
 import { AiTwotoneMail } from "react-icons/ai";
 import axios from "axios";
-
+// import FacebookLogin from "react-facebook-login";
+import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -30,29 +31,8 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    if (!loading && !error && accessToken) {
-      navigate("/");
-    }
-  }, [loading, error, accessToken, navigate]);
-
-  // Thêm đoạn code cho Google Sign-In
-  useEffect(() => {
-    /* global google */
-    google.accounts.id.initialize({
-      client_id:
-        "177734774574-jnp8lh1di19gkb0kep9p28drv5fr2se5.apps.googleusercontent.com", // Thay bằng client_id của bạn
-      callback: handleGoogleSignIn,
-    });
-    google.accounts.id.renderButton(
-      document.getElementById("google-signin-btn"),
-      { theme: "outline", size: "large" }
-    );
-  }, []);
-
   const handleGoogleSignIn = async (response) => {
     const idToken = response.credential;
-    console.log("idToken: ", idToken);
     if (!idToken) {
       console.error(
         "idToken is undefined. Check Google Sign-In initialization."
@@ -75,7 +55,6 @@ const Login = () => {
 
       if (data.success) {
         sessionStorage.setItem("accessToken", data.accessToken);
-        console.log("Đăng nhập Google thành công", data);
         navigate("/");
       } else {
         console.log("Đăng nhập Google thất bại", data.message);
@@ -84,6 +63,57 @@ const Login = () => {
       console.log("Error during Google Sign-In:", error);
     }
   };
+
+  const handleResponseFacebook = async (response) => {
+    const { accessToken, userID } = response;
+
+    if (accessToken && userID) {
+      try {
+        const res = await axios.post("http://localhost:8080/api/api/facebook", {
+          accessToken,
+          userID,
+        });
+
+        const data = res.data;
+        if (data.success) {
+          sessionStorage.setItem("accessToken", data.accessToken);
+          navigate("/");
+        } else {
+          console.log("Đăng nhập Facebook thất bại", data.message);
+        }
+      } catch (error) {
+        console.log("Error during Facebook login:", error);
+      }
+    } else {
+      console.log("Facebook login failed: No access token or user ID");
+    }
+  };
+
+  useEffect(() => {
+    if (!loading && !error && accessToken) {
+      navigate("/");
+    }
+  }, [loading, error, accessToken, navigate]);
+
+  useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id:
+        "177734774574-jnp8lh1di19gkb0kep9p28drv5fr2se5.apps.googleusercontent.com",
+      callback: handleGoogleSignIn,
+      prompt: "select_account",
+      ux_mode: "popup", // Hiển thị dưới dạng popup
+    });
+    google.accounts.id.renderButton(
+      document.getElementById("google-signin-btn"),
+      {
+        theme: "outline",
+        size: "large",
+        text: "signin_with", // Chỉ hiển thị icon Google
+        logo_alignment: "left", // Icon Google căn trái
+      }
+    );
+  }, []);
 
   return (
     <>
@@ -171,21 +201,40 @@ const Login = () => {
                 </div>
 
                 <p className="text-sm !mt-8 text-center text-gray-800">
-                  Bạn chưa có tài khoản ?
+                  Bạn chưa có tài khoản?
                   <a
                     href="/sign_up"
                     className="text-blue-600 hover:underline font-semibold"
                   >
+                    {" "}
                     Đăng ký ngay
                   </a>
                 </p>
               </form>
 
-              {/* Nút đăng nhập bằng Google */}
+              {/* đăng nhập bằng Google */}
               <div
                 id="google-signin-btn"
                 className="!mt-4 flex justify-center"
               ></div>
+
+              {/* đăng nhập bằng Facebook */}
+              <div className="flex justify-center mt-2">
+                <FacebookLogin
+                  appId="890691102929999"
+                  autoLoad={false}
+                  fields="name,email,picture"
+                  callback={handleResponseFacebook}
+                  render={(renderProps) => (
+                    <button
+                      onClick={renderProps.onClick}
+                      className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                    >
+                      <FaFacebook /> Facebook
+                    </button>
+                  )}
+                />
+              </div>
             </div>
             <div className="lg:h-[400px] md:h-[300px] max-md:mt-8">
               <img
