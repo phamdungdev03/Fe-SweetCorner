@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { AiTwotoneMail } from "react-icons/ai";
 import axios from "axios";
 // import FacebookLogin from "react-facebook-login";
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+import FacebookLogin from '@greatsumini/react-facebook-login';
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -31,6 +31,7 @@ const Login = () => {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleGoogleSignIn = async (response) => {
     const idToken = response.credential;
     if (!idToken) {
@@ -113,7 +114,7 @@ const Login = () => {
         logo_alignment: "left", // Icon Google căn trái
       }
     );
-  }, []);
+  }, [handleGoogleSignIn]);
 
   return (
     <>
@@ -222,12 +223,18 @@ const Login = () => {
               <div className="flex justify-center mt-2">
                 <FacebookLogin
                   appId="890691102929999"
-                  autoLoad={false}
-                  fields="name,email,picture"
-                  callback={handleResponseFacebook}
-                  render={(renderProps) => (
+                  onSuccess={(response) => {
+                    handleResponseFacebook(response);
+                  }}
+                  onFail={(error) => {
+                    console.error("Facebook Login Failed:", error);
+                  }}
+                  onProfileSuccess={(response) => {
+                    console.log("Get Profile Success:", response);
+                  }}
+                  render={({ onClick }) => (
                     <button
-                      onClick={renderProps.onClick}
+                      onClick={onClick}
                       className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center gap-2"
                     >
                       <FaFacebook /> Facebook
